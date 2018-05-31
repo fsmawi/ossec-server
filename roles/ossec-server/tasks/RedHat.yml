@@ -26,16 +26,6 @@
     name: /tmp/ossec-hids-server.rpm
     state: present
 
-- name: "Set Distribution CIS filename for RHEL5"
-  set_fact:
-    cis_distribution_filename: cis_rhel5_linux_rcl.txt
-  when: ansible_distribution_major_version == "5"
-
-- name: "Set Distribution CIS filename for RHEL6"
-  set_fact:
-    cis_distribution_filename: cis_rhel6_linux_rcl.txt
-  when: ansible_distribution_major_version == "6"
-
 - name: "Set Distribution CIS filename for RHEL7"
   set_fact:
     cis_distribution_filename: cis_rhel7_linux_rcl.txt
