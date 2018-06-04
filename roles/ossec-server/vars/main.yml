@@ -1,5 +1,6 @@
 ---
 
+ossec_server_release_version: 2.8.3-1.el7.centos.x86_64
 ossec_server_config:
   mail_to:
     - me@example.com

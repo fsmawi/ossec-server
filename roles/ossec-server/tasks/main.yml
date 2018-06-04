@@ -1,14 +1,6 @@
 ---
 # tasks file for ossec-server
 
-- name: Install ossec server required packages
-  yum: state=latest name={{ item }}
-  with_items:
-    - epel-release
-    - python-lxml
-    - wget
-    - firewalld
-
 - name: "Install the correct repository"
   include: "RedHat.yml"
 
@@ -116,20 +108,6 @@
   when:
     - ossec_server_config.syslog_outputs is defined
     - csyslog_running.stdout == '0'
-
-- name: "Write ossec-authd init file"
-  template:
-    src: ossec-authd-init.service
-    dest: /etc/init.d/ossec-authd
-    owner: root
-    group: root
-    mode: 0755
-  when:
-    - ansible_service_mgr == "upstart"
-    - ansible_os_family != "CoreOS"
-  tags:
-    - init
-    - config
 
 - name: "Write ossec-authd systemd file"
   template:
