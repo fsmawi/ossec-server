@@ -90,6 +90,14 @@
     - init
     - config
 
+- name: "Configure agent IP"
+  template:
+    src: ossec_agent_ip_config.sh
+    dest: /var/ossec/bin/ossec_agent_ip_config.sh
+    owner: root
+    group: root
+    mode: +x
+
 - name: "Check if client-syslog is enabled"
   shell: "/var/ossec/bin/ossec-control status | grep -c 'ossec-csyslogd is running' | xargs echo"
   register: csyslog_running
