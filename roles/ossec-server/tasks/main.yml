@@ -32,46 +32,97 @@
   tags:
     - config
 
-- name: "Configure the shared-agent.conf"
+- name: "Installing the custom rules (rules_config.xml)"
   template:
-    src: var-ossec-etc-shared-agent.conf.j2
-    dest: /var/ossec/etc/shared/agent.conf
-    owner: ossec
-    group: ossec
-    mode: 0644
-  notify:
-    - restart ossec-server
-  tags:
-    - init
-    - config
-
-- name: "Installing custom local_rules.xml"
-  template:
-    src: "{{ playbook_dir }}/{{ ossec_server_config.local_rules_template }}"
-    dest: /var/ossec/rules/local_rules.xml
+    src: rules_config.xml
+    dest: /var/ossec/rules/rules_config.xml
     owner: root
     group: root
     mode: 0644
-  when:
-    - ossec_server_config.local_rules_template is defined
-  notify:
-    - restart ossec-server
   tags:
     - init
     - config
     - rules
 
-- name: "Installing the local_rules.xml (default local_rules.xml)"
+- name: "Installing the custom rules (acquia_ossec_rules.xml)"
   template:
-    src: var-ossec-rules-local_rules.xml.j2
-    dest: /var/ossec/rules/local_rules.xml
+    src: acquia_ossec_rules.xml
+    dest: /var/ossec/rules/acquia_ossec_rules.xml
     owner: root
     group: root
     mode: 0644
-  when:
-    - ossec_server_config.local_rules_template is not defined
-  notify:
-    - restart ossec-server
+  tags:
+    - init
+    - config
+    - rules
+
+- name: "Installing the custom rules (acquia_auditd_rules.xml)"
+  template:
+    src: acquia_auditd_rules.xml
+    dest: /var/ossec/rules/acquia_auditd_rules.xml
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - init
+    - config
+    - rules
+
+- name: "Configure internal options (local_internal_options.conf)"
+  template:
+    src: local_internal_options.conf
+    dest: /var/ossec/etc/local_internal_options.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - init
+    - config
+    - rules
+
+- name: "Configure rootkit (rootkit_files.txt)"
+  template:
+    src: rootkit_files.txt
+    dest: /var/ossec/etc/shared/rootkit_files.txt
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - init
+    - config
+    - rules
+
+- name: "Configure rootkit (rootkit_trojans.txt)"
+  template:
+    src: rootkit_trojans.txt
+    dest: /var/ossec/etc/shared/rootkit_trojans.txt
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - init
+    - config
+    - rules
+
+- name: "Configure rootkit (acquia_audit.txt)"
+  template:
+    src: acquia_audit.txt
+    dest: /var/ossec/etc/shared/acquia_audit.txt
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - init
+    - config
+    - rules
+
+- name: "Configure local_decoder"
+  template:
+    src: local_decoder.xml
+    dest: /var/ossec/etc/local_decoder.xml
+    owner: root
+    group: root
+    mode: 0644
   tags:
     - init
     - config
@@ -79,7 +130,7 @@
 
 - name: "Configure the ossec-server"
   template:
-    src: var-ossec-etc-ossec-server.conf.j2
+    src: var-ossec-etc-ossec-server.conf
     dest: /var/ossec/etc/{{ ossec_server_config_filename }}
     owner: root
     group: root

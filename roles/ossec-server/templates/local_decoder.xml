@@ -1,0 +1,19 @@
+<!-- ACQUIA OSSEC DECODERS -->
+
+<decoder name="auditd">
+ <prematch>node=\S+ type=\S+ msg=audit\S+</prematch>
+</decoder>
+
+<decoder name="auditd_SSH">
+ <parent>auditd</parent>
+ <prematch>type=CRED_ACQ</prematch>
+ <regex>msg=\pop=PAM\psetcred acct=(\S+) exe=\S+ hostname=(\S+)</regex>
+ <order>dstuser, srcip</order>
+</decoder>
+
+<decoder name="SYSCALL">
+ <parent>auditd</parent>
+ <prematch>type=SYSCALL</prematch>
+ <regex>msg=audit\p\d+\p\d+\p(\d+)\p\p arch=\S+ syscall=\S+ success=\S+ exit=\S+ a0=\S+ a1=\S+ a2=\S+ a3=\S+ items=\S ppid=\S+ pid=\S+ auid=(\S+) uid=\S+ gid=\S+ euid=(\S+) suid=\S+ fsuid=\S+ egid=\S+ sgid=\S+ fsgid=\S+ tty=\S+ ses=\S+ comm=(\S+) exe=(\S+)</regex>
+ <order>id, srcuser, dstuser, action, extra_data</order>
+</decoder>

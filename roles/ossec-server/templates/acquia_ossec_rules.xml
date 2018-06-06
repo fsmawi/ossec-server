@@ -1,0 +1,144 @@
+<!-- ACQUIA OSSEC RULES -->
+
+<group name="ossec-rules">
+
+  <rule id="110000" level="0">
+    <category>ossec</category>
+    <decoded_as>ossec</decoded_as>
+    <description>Grouping of ossec rules.</description>
+  </rule>
+
+<!-- Process monitoring rules -->
+  <rule id="110001" level="0">
+   <if_sid>110000</if_sid>
+   <match>^ossec: output: </match>
+   <description>OSSEC process monitoring rules.</description>
+   <group>process_monitor,</group>
+  </rule>
+
+<!-- Monitor for network port changes -->
+  <rule id="110002" level="7">
+   <if_sid>110001</if_sid>
+   <match>ossec: output: 'netstat -tan \|grep LISTEN</match>
+   <check_diff/>
+   <description>Listening ports have changed.</description>
+  </rule>
+
+<!-- Monitor for IPTables INPUT changes -->
+  <rule id="110003" level="7">
+   <if_sid>110001</if_sid>
+   <match>ossec: output: 'iptables -L INPUT</match>
+   <check_diff/>
+   <description>IPtables INPUT chain has changed.</description>
+  </rule>
+
+  <rule id="110100" level="0">
+    <category>ossec</category>
+    <decoded_as>rootcheck</decoded_as>
+    <description>Rootcheck event.</description>
+    <group>rootcheck,</group>
+  </rule>
+
+<!-- Rootcheck alerts -->
+  <rule id="110101" level="7">
+    <if_sid>110100</if_sid>
+    <description>Host-based anomaly detection event (rootcheck).</description>
+    <group>rootcheck,</group>
+    <if_fts />
+  </rule>
+
+<!-- Suppress scan messages -->
+  <rule id="110150" level="0">
+    <if_sid>110101</if_sid>
+    <match>^Starting rootcheck scan|^Ending rootcheck scan.|</match>
+    <match>^Starting syscheck scan|^Ending syscheck scan.</match>
+    <description>Ignoring rootcheck/syscheck scan messages.</description>
+    <group>rootcheck,syscheck</group>
+  </rule>
+
+<!-- Unix audit alerts -->
+  <rule id="110102" level="3">
+    <if_sid>110101</if_sid>
+    <match>^System Audit</match>
+    <description>System Audit event.</description>
+    <group>rootcheck,</group>
+  </rule>
+
+  <rule id="110103" level="7">
+    <if_sid>110102</if_sid>
+    <match>^System Audit: Web Infection</match>
+    <description>System Audit: Infected web application found.</description>
+    <group>rootcheck,</group>
+  </rule>
+
+<!-- FIM alerts -->
+  <rule id="110200" level="7">
+    <category>ossec</category>
+    <decoded_as>syscheck_integrity_changed</decoded_as>
+    <description>Integrity checksum changed.</description>
+    <group>syscheck,</group>
+  </rule>
+
+  <rule id="110201" level="7">
+    <category>ossec</category>
+    <decoded_as>syscheck_integrity_changed_2nd</decoded_as>
+    <description>Integrity checksum changed again (2nd time).</description>
+    <group>syscheck,</group>
+  </rule>
+
+  <rule id="110202" level="7">
+    <category>ossec</category>
+    <decoded_as>syscheck_integrity_changed_3rd</decoded_as>
+    <description>Integrity checksum changed again (3rd time).</description>
+    <group>syscheck,</group>
+  </rule>
+
+  <rule id="110203" level="7">
+    <category>ossec</category>
+    <decoded_as>syscheck_deleted</decoded_as>
+    <description>File deleted. Unable to retrieve checksum.</description>
+    <group>syscheck,</group>
+  </rule>
+
+  <rule id="110204" level="3">
+    <category>ossec</category>
+    <decoded_as>syscheck_new_entry</decoded_as>
+    <description>File added to the system.</description>
+    <group>syscheck,</group>
+  </rule>
+
+<!-- Suppress config directories for new file alerts -->
+<!-- Variable for the list of config directories -->
+  <var name="CONF_DIRS">/etc/apache2|/var/www/site-fpm|/var/www/site-scripts|/var/lib/mysql|/etc/nginx|/etc/varnish|/etc/sudoers.d|/etc/syslog-ng|/etc/ssh|/etc/ssl|/var/ossec</var>
+
+  <rule id="110250" level="0">
+   <category>ossec</category>
+   <decoded_as>syscheck_new_entry</decoded_as>
+   <match>$CONF_DIRS</match>
+   <description>Suppress new file alerts for config directories</description>
+  </rule>
+
+
+  <rule id="110300" level="7">
+    <if_sid>110000</if_sid>
+    <match>^ossec: agentless: </match>
+    <description>Integrity checksum for agentless device changed.</description>
+    <group>syscheck,agentless</group>
+  </rule>
+
+  <!-- Hostinfo rules -->
+  <rule id="110400" level="8">
+    <category>ossec</category>
+    <decoded_as>hostinfo_modified</decoded_as>
+    <description>Host information changed.</description>
+    <group>hostinfo,</group>
+  </rule>
+
+  <rule id="110401" level="8">
+    <category>ossec</category>
+    <decoded_as>hostinfo_new</decoded_as>
+    <description>Host information added.</description>
+    <group>hostinfo,</group>
+  </rule>
+
+</group>

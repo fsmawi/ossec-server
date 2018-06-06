@@ -1,0 +1,76 @@
+<!-- ACQUIA OSSEC AUDITD RULESET -->
+
+<group name="ssh_login">
+<!-- audit SSH sessions -->
+
+ <rule id="100200" level="2">
+  <decoded_as>auditd</decoded_as>
+  <match>CRED_ACQ</match>
+  <description>User SSH session started.</description>
+ </rule>
+
+<!-- Suppressions -->
+ <rule id="100201" level="0">
+  <decoded_as>auditd</decoded_as>
+  <match>auid=4294967295</match>
+  <description>Ignore pre-uid assignment messages</description>
+ </rule>
+</group>
+
+<!-- Variables for the types commands/tools we are auditing OSSEX regex format -->
+<var name="SUSPICIOUS_COMMANDS">nmap|metasploit|telnet|scat|tshark|gcc|objdump|minergate|lukMiner</var>
+<var name="ADMIN_TOOLS">netcat|a0\p\pnc|nc\popenbsd|chown|apt\pget\s+install|dpkg\s+\pi</var>
+<var name="USER_TOOLS">useradd|adduser|userdel|deluser|addgroup|delgroup|groupadd|groupdel</var>
+<var name="KERNEL_TOOLS">insmod|rmmod|modprobe</var>
+
+<group name="command_audit">
+<!-- Audit the monitored commands/tools -->
+ <rule id="100000" level="1">
+  <decoded_as>auditd</decoded_as>
+  <match>type=SYSCALL</match>
+  <options>no_log</options>
+ </rule>
+
+<!-- Alerts -->
+ <rule id="100001" level="4">
+  <if_matched_sid>100000</if_matched_sid>
+  <regex>$SUSPICIOUS_COMMANDS|$ADMIN_TOOLS|$USER_TOOLS|$KERNEL_TOOLS</regex>
+  <description>A monitored command was run.</description>
+ </rule>
+
+<!-- Suppressions -->
+<!-- Suppress puppet user 528-->
+ <rule id="100150" level="0">
+  <if_sid>100000</if_sid>
+  <regex>$ADMIN_TOOLS</regex>
+  <user>^528$</user>
+  <description>suppress puppet user running admin tools</description>
+ </rule>
+
+<!-- Supress root user module.ko -->
+ <rule id="100151" level="0">
+  <if_sid>100000</if_sid>
+  <match>module.ko</match>
+  <user>^0$</user>
+  <description>suppress root user module.ko commands.</description>
+ </rule>
+
+<!-- Suppress root user user_tools -->
+ <rule id="100152" level="0">
+  <if_sid>100000</if_sid>
+  <regex>$USER_TOOLS</regex>
+  <user>^0$</user>
+  <description>suppress root user runnning user commands</description>
+ </rule>
+
+<!-- Suppress root user nc.openbsd -->
+ <rule id="100153" level="0">
+  <if_sid>100000</if_sid>
+  <match>nc.openbsd</match>
+  <user>^0$</user>
+  <description>suppress root user runnning nc.openbsd</description>
+ </rule>
+</group>
+
+
+<!-- EOF -->
