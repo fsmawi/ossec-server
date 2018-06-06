@@ -5,12 +5,16 @@
   include: "RedHat.yml"
 
 - name: "Install CIS Root Checks"
-  get_url:
-    url: "https://raw.githubusercontent.com/ossec/ossec-hids/master/src/rootcheck/db/{{ cis_distribution_filename }}"
-    dest: "/var/ossec/etc/shared/{{ cis_distribution_filename }}"
-    mode: 0660
+  template:
+    src: cis_rhel7_linux_rcl.txt
+    dest: /var/ossec/etc/shared/cis_rhel7_linux_rcl.txt
     owner: root
     group: ossec
+    mode: 0660
+  tags:
+    - init
+    - config
+    - rules
 
 - name: "Generate SSL files"
   command: "openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:1825 -keyout sslmanager.key -out sslmanager.cert -subj /CN={{ ossec_server_fqdn }}/"
