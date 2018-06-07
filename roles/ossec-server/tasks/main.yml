@@ -41,8 +41,8 @@
     src: rules_config.xml
     dest: /var/ossec/rules/rules_config.xml
     owner: root
-    group: root
-    mode: 0644
+    group: ossec
+    mode: 550
   tags:
     - init
     - config
@@ -53,8 +53,8 @@
     src: acquia_ossec_rules.xml
     dest: /var/ossec/rules/acquia_ossec_rules.xml
     owner: root
-    group: root
-    mode: 0644
+    group: ossec
+    mode: 550
   tags:
     - init
     - config
@@ -65,8 +65,8 @@
     src: acquia_auditd_rules.xml
     dest: /var/ossec/rules/acquia_auditd_rules.xml
     owner: root
-    group: root
-    mode: 0644
+    group: ossec
+    mode: 550
   tags:
     - init
     - config
@@ -125,7 +125,7 @@
     src: local_decoder.xml
     dest: /var/ossec/etc/local_decoder.xml
     owner: root
-    group: root
+    group: ossec
     mode: 0644
   tags:
     - init
@@ -137,8 +137,8 @@
     src: var-ossec-etc-ossec-server.conf
     dest: /var/ossec/etc/{{ ossec_server_config_filename }}
     owner: root
-    group: root
-    mode: 0644
+    group: ossec
+    mode: 0440
   notify:
     - restart ossec-server
   tags:
